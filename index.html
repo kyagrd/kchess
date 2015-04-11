@@ -1,0 +1,225 @@
+<!-- vim: ts=2: sw=2: expandtab:
+-->
+<!DOCTYPE html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="description"  content="Korean Chess"/>
+  <title>Korean Chess</title>
+</head>
+<html>
+<body>
+  <canvas id="c" width="675" height="625"
+          style = "position: absolute; top: 5px; left: 5px;">
+  </canvas>
+  <div id="stat" style = "position: absolute; top: 635px; left: 10px;">
+    stat AAA
+  </div>
+
+  <div id="bs"></div>
+
+  <script>
+var marg_w = 60;
+var grid_w = 120;
+var board_w = marg_w*2 + grid_w*8;
+
+var marg_h = 50;
+var grid_h = 100;
+var board_h = marg_h*2 + grid_h*9;
+
+var turn = 0;
+// var s = localStorage;
+var bs = document.getElementById("bs");
+var stat = document.getElementById("stat");
+var c = document.getElementById("c");
+var ctx = c.getContext("2d");
+ctx.scale(0.625,0.625);
+
+var imgGreenKing = new Image();
+imgGreenKing.src = "images/Green_King.png";
+imgGreenKing.onload = function() { 
+  ctx.drawImage(imgGreenKing, 4*grid_w, 8*grid_h);
+}; 
+
+var imgGreenSa = new Image();
+imgGreenSa.src = "images/Green_Sa.png";
+imgGreenSa.onload = function() { 
+  ctx.drawImage(imgGreenSa, 3*grid_w, 9*grid_h);
+  ctx.drawImage(imgGreenSa, 5*grid_w, 9*grid_h);
+};
+
+var imgGreenCha = new Image();
+imgGreenCha.src = "images/Green_Cha.png";
+imgGreenCha.onload = function() { 
+  ctx.drawImage(imgGreenCha, 0*grid_w, 9*grid_h);
+  ctx.drawImage(imgGreenCha, 8*grid_w, 9*grid_h);
+}; 
+
+var imgGreenPo = new Image();
+imgGreenPo.src = "images/Green_Po.png";
+imgGreenPo.onload = function() { 
+  ctx.drawImage(imgGreenPo, 1*grid_w, 7*grid_h);
+  ctx.drawImage(imgGreenPo, 7*grid_w, 7*grid_h);
+}; 
+
+var imgGreenZol = new Image();
+imgGreenZol.src = "images/Green_Zol.png";
+imgGreenZol.onload = function() { 
+  ctx.drawImage(imgGreenZol, 0*grid_w, 6*grid_h);
+  ctx.drawImage(imgGreenZol, 2*grid_w, 6*grid_h);
+  ctx.drawImage(imgGreenZol, 4*grid_w, 6*grid_h);
+  ctx.drawImage(imgGreenZol, 6*grid_w, 6*grid_h);
+  ctx.drawImage(imgGreenZol, 8*grid_w, 6*grid_h);
+}; 
+
+var imgGreenMa = new Image();
+imgGreenMa.src = "images/Green_Ma.png";
+imgGreenMa.onload = function() { 
+  ctx.drawImage(imgGreenMa, 1*grid_w, 9*grid_h);
+  ctx.drawImage(imgGreenMa, 6*grid_w, 9*grid_h);
+}; 
+
+var imgGreenSang = new Image();
+imgGreenSang.src = "images/Green_Sang.png";
+imgGreenSang.onload = function() { 
+  ctx.drawImage(imgGreenSang, 2*grid_w, 9*grid_h);
+  ctx.drawImage(imgGreenSang, 7*grid_w, 9*grid_h);
+}; 
+
+
+
+
+
+var imgRedKing = new Image();
+imgRedKing.src = "images/Red_King.png";
+imgRedKing.onload = function() { 
+  ctx.drawImage(imgRedKing, 4*grid_w, 1*grid_h);
+};
+
+var imgRedSa = new Image();
+imgRedSa.src = "images/Red_Sa.png";
+imgRedSa.onload = function() { 
+  ctx.drawImage(imgRedSa, 3*grid_w, 0*grid_h);
+  ctx.drawImage(imgRedSa, 5*grid_w, 0*grid_h);
+}; 
+
+var imgRedCha = new Image();
+imgRedCha.src = "images/Red_Cha.png";
+imgRedCha.onload = function() { 
+  ctx.drawImage(imgRedCha, 0*grid_w, 0*grid_h);
+  ctx.drawImage(imgRedCha, 8*grid_w, 0*grid_h);
+}; 
+
+var imgRedPo = new Image();
+imgRedPo.src = "images/Red_Po.png";
+imgRedPo.onload = function() { 
+  ctx.drawImage(imgRedPo, 1*grid_w, 2*grid_h);
+  ctx.drawImage(imgRedPo, 7*grid_w, 2*grid_h);
+}; 
+
+var imgRedByung = new Image();
+imgRedByung.src = "images/Red_Byung.png";
+imgRedByung.onload = function() { 
+  ctx.drawImage(imgRedByung, 0*grid_w, 3*grid_h);
+  ctx.drawImage(imgRedByung, 2*grid_w, 3*grid_h);
+  ctx.drawImage(imgRedByung, 4*grid_w, 3*grid_h);
+  ctx.drawImage(imgRedByung, 6*grid_w, 3*grid_h);
+  ctx.drawImage(imgRedByung, 8*grid_w, 3*grid_h);
+}; 
+
+var imgRedMa = new Image();
+imgRedMa.src = "images/Red_Ma.png";
+imgRedMa.onload = function() { 
+  ctx.drawImage(imgRedMa, 1*grid_w, 0*grid_h);
+  ctx.drawImage(imgRedMa, 6*grid_w, 0*grid_h);
+}; 
+
+var imgRedSang = new Image();
+imgRedSang.src = "images/Red_Sang.png";
+imgRedSang.onload = function() { 
+  ctx.drawImage(imgRedSang, 2*grid_w, 0*grid_h);
+  ctx.drawImage(imgRedSang, 7*grid_w, 0*grid_h);
+}; 
+
+
+
+
+
+function drawBoard() {
+  ctx.fillStyle = "#CC9900";
+  ctx.fillRect(0,0,board_w,board_h);
+  // ||||
+  for (i=1; i <= 9; i++) {
+    ctx.moveTo(marg_w + (i-1)*grid_w, marg_h    );
+    ctx.lineTo(marg_w + (i-1)*grid_w, board_h-marg_h);
+    ctx.stroke();
+  }
+  // ----
+  for (j=1; j <= 10; j++) {
+    ctx.moveTo(marg_w        , marg_h + (j-1)*grid_h);
+    ctx.lineTo(board_w-marg_w, marg_h + (j-1)*grid_h);
+    ctx.stroke();
+  }
+
+  ctx.moveTo(marg_w + 3*grid_w, marg_h);
+  ctx.lineTo(marg_w + 5*grid_w, marg_h + 2*grid_h);
+  ctx.stroke();
+
+  ctx.moveTo(marg_w + 3*grid_w, marg_h + 2*grid_h);
+  ctx.lineTo(marg_w + 5*grid_w, marg_h);
+  ctx.stroke();
+
+  ctx.moveTo(marg_w + 3*grid_w, marg_h + 7*grid_h);
+  ctx.lineTo(marg_w + 5*grid_w, marg_h + 9*grid_h);
+  ctx.stroke();
+
+  ctx.moveTo(marg_w + 3*grid_w, marg_h + 9*grid_h);
+  ctx.lineTo(marg_w + 5*grid_w, marg_h + 7*grid_h);
+  ctx.stroke();
+
+};
+
+function drawStat() {
+  // var color = null;
+  // if (turn % 2 == 0) color = "black";
+  // else color = "white";
+  // stat.innerHTML = color + "'s turn.";
+};
+
+function drawPeice(i,j,color,kind) {
+  var img = document;
+}
+
+function playTurn(i,j) {
+  // if (board[i][j] != null) {
+  //   alert("Place your stone in empty grid!");
+  //   return;
+  // }
+
+  // var color = null;
+  // if (turn % 2 == 0) color = "black";
+  // else color = "white";
+
+  // board[i][j] = color;
+  // drawPeice(i,j,color);
+
+  // turn ++;
+  // drawStat();
+};
+
+drawBoard();
+drawStat();
+
+for (i=0; i < 15; i++)
+  for (j=0; j < 15; j++)
+    bs.innerHTML +=
+      '<button id="b_'+i+'_'+j+'" type="button" ' +
+              'onclick="playTurn('+i+','+j+')" ' +
+              'style = "position: absolute; width: 30px; height: 30px; ' +
+                       'top: '+(10+j*40)+'px; left: '+(10+i*40)+'px; ' +
+                       'opacity: 0; border: 1px;">' +
+      +i+','+j +
+      '</button>\n' ;
+  </script>
+</body>
+</html>
+
